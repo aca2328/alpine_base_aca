@@ -1,6 +1,6 @@
+FROM alpine:3.7
 LABEL maintainer="acamerlo@vmware.com"
 LABEL description="python+ansible+terraform+aviroles image"
-FROM alpine:3.7
 
 ENV ANSIBLE_VERSION 2.6.6
 
