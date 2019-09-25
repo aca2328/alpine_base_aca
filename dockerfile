@@ -52,7 +52,6 @@ RUN set -x && \
     echo "[local]" >> /etc/ansible/hosts && \
     echo "localhost" >> /etc/ansible/hosts
 
-ENV PS1="ubaca\w>"
 ENV ANSIBLE_GATHERING smart
 ENV ANSIBLE_HOST_KEY_CHECKING false
 ENV ANSIBLE_RETRY_FILES_ENABLED false
@@ -61,8 +60,6 @@ ENV ANSIBLE_SSH_PIPELINING True
 ENV PYTHONPATH /ansible/lib
 ENV PATH /ansible/bin:$PATH
 ENV ANSIBLE_LIBRARY /ansible/library
-RUN echo 'alias ll="ls -lrt"' >> ~/.bashrc
-
 
 RUN pip install avisdk
 RUN ansible-galaxy install avinetworks.avisdk
@@ -74,8 +71,8 @@ RUN wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER
 RUN unzip terraform_${TER_VER}_linux_amd64.zip
 RUN mv terraform /usr/local/bin/
 RUN rm terraform_${TER_VER}*
-#WORKDIR /ansible/playbooks
+WORKDIR /home
 
-
+RUN echo 'alias ll="ls -lrt"' >> ~/.bashrc
+ENV PS1="ubaca\w>"
 ENTRYPOINT ["/bin/bash"]
-
