@@ -74,5 +74,5 @@ RUN rm terraform_${TER_VER}*
 WORKDIR /home
 
 RUN echo 'alias ll="ls -lrt"' >> ~/.bashrc
-ENV PS1="ubaca\w>"
+ENV PS1="alpaca\w>"
 ENTRYPOINT ["/bin/bash"]
