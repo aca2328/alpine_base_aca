@@ -1,50 +1,25 @@
-FROM alpine:3.7
+FROM alpine:3.12
 LABEL maintainer="acamerlo@vmware.com"
-LABEL description="python+ansible+terraform+aviroles image"
-
-ENV ANSIBLE_VERSION 2.6.6
+LABEL description="alpine 3.12, ansible2.9.9 + aviroles, terraform 0.12.28"
 
 ENV BUILD_PACKAGES \
   bash \
   curl \
   tar \
   openssh-client \
+  openssh \
   sshpass \
   git \
-  python \
-  py-boto \
-  py-dateutil \
-  py-httplib2 \
-  py-jinja2 \
-  py-paramiko \
-  py-pip \
-  py-yaml \
-  ca-certificates
+  ca-certificates\
+  ansible=2.9.9-r0
 
 
-RUN set -x && \
-    \
-    echo "==> Adding build-dependencies..."  && \
-    apk --update add --virtual build-dependencies \
-      gcc \
-      musl-dev \
-      libffi-dev \
-      openssl-dev \
-      python-dev && \
-    \
-    echo "==> Upgrading apk and system..."  && \
+RUN echo "==> Upgrading apk and system..."  && \
     apk update && apk upgrade && \
     \
-    echo "==> Adding Python runtime..."  && \
     apk add --no-cache ${BUILD_PACKAGES} && \
-    pip install --upgrade pip && \
-    pip install python-keyczar docker-py && \
-    \
-    echo "==> Installing Ansible..."  && \
-    pip install ansible==${ANSIBLE_VERSION} && \
     \
     echo "==> Cleaning up..."  && \
-    apk del build-dependencies && \
     rm -rf /var/cache/apk/* && \
     \
     echo "==> Adding hosts for convenience..."  && \
@@ -61,18 +36,17 @@ ENV PYTHONPATH /ansible/lib
 ENV PATH /ansible/bin:$PATH
 ENV ANSIBLE_LIBRARY /ansible/library
 
-RUN pip install avisdk
 RUN ansible-galaxy install avinetworks.avisdk
 RUN ansible-galaxy install avinetworks.docker,master
 RUN ansible-galaxy install avinetworks.avicontroller,master
 
-ENV TER_VER="0.12.9"
+ENV TER_VER="0.12.28"
 RUN wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
 RUN unzip terraform_${TER_VER}_linux_amd64.zip
 RUN mv terraform /usr/local/bin/
 RUN rm terraform_${TER_VER}*
-WORKDIR /home
 
+WORKDIR /home
 RUN echo 'alias ll="ls -lrt"' >> ~/.bashrc
 ENV PS1="alpaca\w>"
 ENTRYPOINT ["/bin/bash"]
