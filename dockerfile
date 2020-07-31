@@ -1,6 +1,6 @@
 FROM alpine:3.12
 LABEL maintainer="acamerlo@vmware.com"
-LABEL description="alpine 3.12, ansible2.9.9 + aviroles, terraform 0.12.28"
+LABEL description="alpine 3.12, ansible2.9.9 + aviroles + avisdk, terraform 0.12.28"
 
 ENV BUILD_PACKAGES \
   bash \
@@ -10,6 +10,7 @@ ENV BUILD_PACKAGES \
   openssh \
   sshpass \
   git \
+  py-pip \
   ca-certificates\
   ansible=2.9.9-r0
 
@@ -36,6 +37,7 @@ ENV PYTHONPATH /ansible/lib
 ENV PATH /ansible/bin:$PATH
 ENV ANSIBLE_LIBRARY /ansible/library
 
+RUN pip install avisdk
 RUN ansible-galaxy install avinetworks.avisdk
 RUN ansible-galaxy install avinetworks.docker,master
 RUN ansible-galaxy install avinetworks.avicontroller,master
