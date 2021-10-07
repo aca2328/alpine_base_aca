@@ -1,6 +1,6 @@
-FROM alpine:3.12
+FROM alpine:3.12.8
 LABEL maintainer="acamerlo@vmware.com"
-LABEL description="alpine 3.12, ansible2.9.9 + aviroles + avisdk, terraform 0.12.28"
+LABEL description="alpine 3.12.8, ansible2.9.18-r0 + aviroles + avisdk, terraform 1.0.8"
 
 ENV BUILD_PACKAGES \
   bash \
@@ -12,7 +12,7 @@ ENV BUILD_PACKAGES \
   git \
   py-pip \
   ca-certificates\
-  ansible=2.9.9-r0
+  ansible=2.9.18-r0
 
 
 RUN echo "==> Upgrading apk and system..."  && \
@@ -42,7 +42,7 @@ RUN ansible-galaxy install avinetworks.avisdk
 RUN ansible-galaxy install avinetworks.docker,master
 RUN ansible-galaxy install avinetworks.avicontroller,master
 
-ENV TER_VER="0.12.28"
+ENV TER_VER="1.0.8"
 RUN wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
 RUN unzip terraform_${TER_VER}_linux_amd64.zip
 RUN mv terraform /usr/local/bin/
