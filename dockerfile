@@ -12,8 +12,9 @@ ENV BUILD_PACKAGES \
   git \
   py-pip \
   ca-certificates\
-  ansible=2.9.18-r0
-
+  ansible=2.9.18-r0\
+  go\
+  make
 
 RUN echo "==> Upgrading apk and system..."  && \
     apk update && apk upgrade && \
@@ -53,6 +54,13 @@ RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${
   && tar xzvf docker-${DOCKERVERSION}.tgz --strip 1 \
                  -C /usr/local/bin docker/docker \
   && rm docker-${DOCKERVERSION}.tgz
+
+ENV GOPATH /root/go
+ENV PATH ${GOPATH}/bin:/usr/local/go/bin:$PATH
+ENV GOBIN $GOROOT/bin
+ENV GO111MODULE on
+RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
+
 
 WORKDIR /home
 RUN echo 'alias ll="ls -lrt"' >> ~/.bashrc
