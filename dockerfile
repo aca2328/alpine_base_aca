@@ -39,9 +39,7 @@ ENV PATH /ansible/bin:$PATH
 ENV ANSIBLE_LIBRARY /ansible/library
 
 RUN pip install avisdk
-RUN ansible-galaxy install avinetworks.avisdk
-RUN ansible-galaxy install avinetworks.docker,master
-RUN ansible-galaxy install avinetworks.avicontroller,master
+RUN ansible-galaxy collection install vmware.alb
 
 ENV TER_VER="1.1.2"
 RUN wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
