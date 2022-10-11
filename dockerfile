@@ -1,6 +1,6 @@
 FROM alpine:3.12.8
 LABEL maintainer="acamerlo@vmware.com"
-LABEL description="alpine 3.12.8, ansible2.9.18-r0 + aviroles + avisdk, terraform 1.1.2, docker cli 20.10.10"
+LABEL description="alpine 3.12.8, ansible2.9.18-r0 + aviroles + avisdk, terraform 1.3.2, docker cli 20.10.10"
 
 ENV BUILD_PACKAGES \
   bash \
@@ -41,7 +41,7 @@ ENV ANSIBLE_LIBRARY /ansible/library
 RUN pip install avisdk
 RUN ansible-galaxy collection install vmware.alb
 
-ENV TER_VER="1.1.2"
+ENV TER_VER="1.3.2"
 RUN wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
 RUN unzip terraform_${TER_VER}_linux_amd64.zip
 RUN mv terraform /usr/local/bin/
