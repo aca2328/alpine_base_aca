@@ -18,7 +18,6 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --upgrade pip && \
     pip install ansible avisdk pandas
-# RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Install Terraform
 RUN wget -q https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip && \
