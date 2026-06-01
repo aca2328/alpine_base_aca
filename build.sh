@@ -20,20 +20,9 @@ fi
 # Enable multi-architecture support
 docker buildx inspect --bootstrap
 
-# Build the Docker image for multiple architectures
-docker buildx build --platform linux/amd64,linux/arm64 -t aca2328/alpaca:multi-arch --push .
-
-# Create a manifest for automatic architecture selection
-docker manifest create aca2328/alpaca:latest \
-    aca2328/alpaca:multi-arch-amd64 \
-    aca2328/alpaca:multi-arch-arm64
-
-# Annotate the manifest with architecture information
-docker manifest annotate aca2328/alpaca:latest aca2328/alpaca:multi-arch-amd64 --arch amd64
-docker manifest annotate aca2328/alpaca:latest aca2328/alpaca:multi-arch-arm64 --arch arm64
-
-# Push the manifest to Docker Hub
-docker manifest push aca2328/alpaca:latest
+# Build and push the Docker image for multiple architectures
+# buildx --push automatically creates and pushes a multi-arch manifest
+docker buildx build --platform linux/amd64,linux/arm64 -t aca2328/alpaca:latest --push .
 
 # Check if any command failed
 if [ $? -eq 0 ]; then
