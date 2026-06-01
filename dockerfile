@@ -10,6 +10,7 @@ ARG TARGETOS=linux
 ENV GO_VERSION=1.26.3
 ENV TER_VER=1.15.5
 ENV DOCKERVERSION=29.5.2
+ENV AVI_VERSIONS="32.1.1 31.2.2 30.2.7"
 
 # Install necessary packages and build dependencies
 RUN apk update && apk upgrade && \
@@ -68,8 +69,28 @@ ENV PYTHONPATH=/ansible/lib
 ENV PATH=/ansible/bin:$PATH
 ENV ANSIBLE_LIBRARY=/ansible/library
 
-# Install Ansible collections
-RUN ansible-galaxy collection install vmware.alb
+# Install vmware.alb Ansible collection for each supported AVI version
+# Switch versions at runtime via: ANSIBLE_COLLECTIONS_PATH=/opt/avi-collections/<version>
+RUN for AVI_VER in ${AVI_VERSIONS}; do \
+      ansible-galaxy collection install "vmware.alb:${AVI_VER}" -p "/opt/avi-collections/${AVI_VER}"; \
+    done
+
+# Pre-seed Terraform AVI provider cache for each supported AVI version
+# Terraform auto-selects the correct version based on required_providers constraints
+ENV TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache
+RUN case "${TARGETARCH}" in \
+      amd64) TF_ARCH="amd64" ;; \
+      arm64) TF_ARCH="arm64" ;; \
+    esac && \
+    for AVI_VER in ${AVI_VERSIONS}; do \
+      DOWNLOAD_URL=$(curl -s "https://registry.terraform.io/v1/providers/vmware/avi/${AVI_VER}/download/linux/${TF_ARCH}" | python3 -c "import sys,json; print(json.load(sys.stdin)['download_url'])") && \
+      PROVIDER_DIR="${TF_PLUGIN_CACHE_DIR}/registry.terraform.io/vmware/avi/${AVI_VER}/linux_${TF_ARCH}" && \
+      mkdir -p "${PROVIDER_DIR}" && \
+      curl -fsSL "${DOWNLOAD_URL}" -o /tmp/tf-avi.zip && \
+      unzip -o /tmp/tf-avi.zip "terraform-provider-avi*" -d "${PROVIDER_DIR}" && \
+      chmod +x "${PROVIDER_DIR}"/terraform-provider-avi* && \
+      rm /tmp/tf-avi.zip; \
+    done
 
 # Clean up
 RUN apk del .build-deps && \

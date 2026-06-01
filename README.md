@@ -15,7 +15,35 @@ Multi-arch: `linux/amd64` and `linux/arm64`.
 | Terraform | 1.15.5 |
 | Docker CLI | 29.5.2 |
 | Go | 1.26.3 |
-| vmware.alb collection | 32.1.1 |
+
+## AVI multi-version support
+
+The last 3 AVI releases are pre-installed for both Ansible and Terraform:
+
+| AVI Version | vmware.alb collection | Terraform provider |
+|-------------|----------------------|--------------------|
+| 32.1.1 | `/opt/avi-collections/32.1.1` | pre-cached |
+| 31.2.2 | `/opt/avi-collections/31.2.2` | pre-cached |
+| 30.2.7 | `/opt/avi-collections/30.2.7` | pre-cached |
+
+**Ansible** — select the collection version via `ANSIBLE_COLLECTIONS_PATH`:
+```bash
+ANSIBLE_COLLECTIONS_PATH=/opt/avi-collections/31.2.2 ansible-playbook site.yml
+```
+
+**Terraform** — the provider cache (`TF_PLUGIN_CACHE_DIR`) is pre-seeded. Terraform picks the right version automatically based on your `required_providers` constraint:
+```hcl
+terraform {
+  required_providers {
+    avi = {
+      source  = "vmware/avi"
+      version = "~> 31.2"
+    }
+  }
+}
+```
+
+**Python avisdk** — a single install of `32.1.1` covers all controller versions (the SDK is backwards-compatible).
 
 ## Usage
 
